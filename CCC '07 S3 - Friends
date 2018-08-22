@@ -1,0 +1,47 @@
+#include <iostream>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+    int n;
+    int stud[10000];
+    int i;
+    int a, b;
+    int cur;
+    int step;
+    scanf(" %d",&n);
+
+    for(i=0; i<n; i++){
+        scanf(" %d %d", &a, &b);
+        a--;
+        b--;
+        stud[a] = b; //SINCE ONE FRIEND IS ONLY ASSIGNED TO ONE OTHER FRIEND, WE CAN STORE THIS INFORMATION USING THE INDEX OF AN ARRAY AND ITS VALUE
+    }
+
+    while(1){
+        scanf(" %d %d", &a, &b);
+        if(a==0){
+            return 0;
+        }
+        a--;
+        b--;
+        cur = a; //WE START FROM THE FIRST INDEX
+        step = 0;
+        while(1){
+            cur = stud[cur]; //WE FOLLOW THE CIRCLE OF FRIENDS BY FOLLOWING THE VALUE OF THE INDICES
+            if(cur == b){ //IF THE CURRENT INDEX IS EQUAL TO THE OBJECTIVE INDEX, WE'VE REACHED OUR GOAL
+                printf("Yes %d\n", step);
+                break;
+            }
+            if(cur == a){ //IF THE CURRENT INDEX RETURNS TO THE FIRST INDEX WITHOUT REACHING THE OBJECTIVE INDEX, THEY ARE NOT IN THE SAME CIRCLE OF FRIENDS
+                printf("No\n");
+                break;
+            }
+            step++; //SINCE THE STEP COUNTER IS ALWAYS THE NUMBER OF FRIENDS IN BETWEEN TWO FRIENDS, WE START AT 0 AND INCREASE AFTER CHECKING
+        }
+    }
+
+    return 0;
+}
