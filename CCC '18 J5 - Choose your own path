@@ -1,0 +1,60 @@
+#include <iostream>
+#include <queue>
+#include <vector>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+    int n, m, x; //n = number of pages, m = # pages connected to ith page, x = page connected to ith page
+    int i, j;
+    int stps;
+    int cur;
+    scanf(" %d", &n);
+
+    int chk[n];
+    vector <int> pg[n];
+    queue <int> q;
+    stps = n+1; //Since there is at least one ending page, and the furthest distance would be the number of pages
+
+    for(i=0; i<n; i++){
+        scanf(" %d", &m);
+        chk[i] = 0;
+        for(j=0; j<m; j++){
+            scanf(" %d", &x);
+            x--; //Subtract 1 from x since array is 0 indexed
+            pg[i].push_back(x);
+        }
+    }
+
+    chk[0] = 1; //Since the first page counts as 1 distance
+    q.push(0);
+
+    while(!q.empty()){
+        cur = q.front();
+        q.pop();
+
+        if(pg[cur].empty() && chk[cur] < stps){ //*Second condition for making sure the minimum distance doesn't get reset
+            stps = chk[cur];
+        }
+
+        for(i=0; i<pg[cur].size(); i++){
+            if(chk[pg[cur][i]] == 0 || chk[cur]+1 < chk[pg[cur][i]]){
+                chk[pg[cur][i]] = chk[cur]+1;
+                q.push(pg[cur][i]);
+            }
+        }
+    }
+
+    for(i=0; i<n; i++){ //Checking if all the pages have been reached
+        if(chk[i]==0){
+            printf("N\n%d", stps);
+            return 0;
+        }
+    }
+
+    printf("Y\n%d", stps);
+
+    return 0;
+}
