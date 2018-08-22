@@ -1,0 +1,98 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <stdio.h>
+
+using namespace std;
+
+int main ()
+{
+    vector <int> v[26];
+    queue <int> l;
+    queue <int> r;
+    queue <int> q;
+    char a, b;
+    int cur;
+    int c, d;
+    int i, j;
+    int ct = 0;
+    int chk[26];
+    int num = 0;
+    vector <int> :: iterator it;
+
+    while(a != '*'){
+        scanf(" %c %c", &a, &b);
+
+        if(a == '*'){
+            break;
+        }
+
+        v[a-65].push_back(b-65);
+        v[b-65].push_back(a-65);
+        l.push(a-65); //Remembering the list of connections
+        r.push(b-65); //
+        ct++;
+    }
+
+    for(i=0; i<ct; i++){
+        c = l.front(); //Going through all the connections
+        d = r.front(); //
+
+        for(j=0; j<26; j++){
+            chk[j] = 0; //Resetting the checked array
+        }
+
+        for(j=0; j<v[c].size(); j++){ //Erasing the current connection
+            if(v[c][j] == d){
+                v[c].erase(v[c].begin()+j);
+            }
+        }
+
+        for(j=0; j<v[d].size(); j++){ //
+            if(v[d][j] == c){
+                v[d].erase(v[d].begin()+j);
+            }
+        }
+
+        q.push(0);
+        chk[0] = 1;
+
+        while(!q.empty()){ //BFS
+            cur = q.front();
+            q.pop();
+
+            for(j=0; j<v[cur].size(); j++){
+                if(chk[v[cur][j]] == 0){
+                    chk[v[cur][j]] = 1;
+                    q.push(v[cur][j]);
+                }
+            }
+
+            if(chk[1] == 1){
+                break;
+            }
+
+        }
+
+        if(chk[1] == 1){
+            while(!q.empty()){ //If there is a connection, we need to clear the queue
+                q.pop();
+            }
+        }else{
+            printf("%c%c\n", c+65, d+65);
+            num++;
+        }
+
+        l.pop(); //Popping the current connection from the list of connections
+        r.pop(); //
+
+        v[d].push_back(c); //Re-adding the deleted connection to the vector of connections
+        v[c].push_back(d); //
+
+    }
+
+    printf("There are %d disconnecting roads.", num);
+
+    return 0;
+}
