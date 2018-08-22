@@ -1,0 +1,189 @@
+#include <iostream>
+#include <queue>
+#include <stdio.h>
+
+using namespace std;
+
+int main()
+{
+    int n, m;
+    int i, j;
+    int k, l;
+    int yes = 0;
+
+    scanf(" %d %d", &n, &m);
+
+    char inpt[n][m];
+    int mp[n][m];
+
+    queue <pair<int, int> > q;
+    pair <int, int> pos;
+
+    for(i=0; i<n; i++)
+    {
+        for(j=0; j<m; j++)
+        {
+            scanf(" %c", &inpt[i][j]);
+            if(inpt[i][j] == 'W' || inpt[i][j] == 'C')
+            {
+                mp[i][j] = -2; //Unpassable as -2
+            }
+            else if(inpt[i][j] == 'S')
+            {
+                mp[i][j] = 0;
+                q.push(make_pair(i, j)); //Initializing queue
+            }
+            else
+            {
+                mp[i][j] = -1; //Unknown as -1
+            }
+        }
+    }
+
+    for(i=0; i<n; i++) //Setting camera range
+    {
+        for(j=0; j<m; j++)
+        {
+            if(inpt[i][j] == 'C')
+            {
+                k = i;
+                l = j;
+                while(inpt[k+1][l] != 'W')
+                {
+                    if(inpt[k+1][l]=='L' || inpt[k+1][l]=='R' || inpt[k+1][l]=='D' || inpt[k+1][l]=='U') //If it passes conveyors, it skips it but continues
+                    {
+                        k++;
+                        continue;
+                    }
+                    mp[k+1][l] = -2;
+                    k++;
+                }
+                k = i;
+                while(inpt[k-1][l] != 'W')
+                {
+                    if(inpt[k-1][l]=='L' || inpt[k-1][l]=='R' || inpt[k-1][l]=='D' || inpt[k-1][l]=='U')
+                    {
+                        k--;
+                        continue;
+                    }
+                    mp[k-1][l] = -2;
+                    k--;
+                }
+                k = i;
+                while(inpt[k][l+1] != 'W')
+                {
+                    if(inpt[k][l+1]=='L' || inpt[k][l+1]=='R' || inpt[k][l+1]=='D' || inpt[k][l+1]=='U')
+                    {
+                        l++;
+                        continue;
+                    }
+                    mp[k][l+1] = -2;
+                    l++;
+                }
+                l = j;
+                while(inpt[k][l-1] != 'W')
+                {
+                    if(inpt[k][l-1]=='L' || inpt[k][l-1]=='R' || inpt[k][l-1]=='D' || inpt[k][l-1]=='U')
+                    {
+                        l--;
+                        continue;
+                    }
+                    mp[k][l-1] = -2;
+                    l--;
+                }
+            }
+        }
+    }
+
+    pos = q.front();
+    if(mp[pos.first][pos.second] == -2){ //If a camera spawns right besides S
+        q.pop();
+    }
+
+    while(!q.empty())
+    {
+        pos = q.front();
+        q.pop();
+
+        if(inpt[pos.first][pos.second] == 'L' || inpt[pos.first][pos.second] == 'R' || inpt[pos.first][pos.second] == 'U' || inpt[pos.first][pos.second] == 'D') //If the current position is a conveyor
+        {
+            do
+            {
+                yes = 0;
+
+                if(inpt[pos.first][pos.second] == 'L' && (mp[pos.first][pos.second-1] == -1 || mp[pos.first][pos.second] < mp[pos.first][pos.second-1])) //Goes towards one direction depending on letter
+                {
+                    mp[pos.first][pos.second-1] = mp[pos.first][pos.second]; //Since the number of steps stays the same
+                    pos.second--;
+                    yes = 1;
+                }else if(inpt[pos.first][pos.second] == 'R' && (mp[pos.first][pos.second+1] == -1 || mp[pos.first][pos.second] < mp[pos.first][pos.second+1])) //Else if because there is only one direction the conveyor can point to
+                {
+                    mp[pos.first][pos.second+1] = mp[pos.first][pos.second];
+                    pos.second++;
+                    yes = 1;
+                }else if(inpt[pos.first][pos.second] == 'U' && (mp[pos.first-1][pos.second] == -1 || mp[pos.first][pos.second] < mp[pos.first-1][pos.second])) //Two conditions for mp to check for unknown or a quicker solution, to avoid a RL situation
+                {
+                    mp[pos.first-1][pos.second] = mp[pos.first][pos.second];
+                    pos.first--;
+                    yes = 1;
+                }else if(inpt[pos.first][pos.second] == 'D' && (mp[pos.first+1][pos.second]==-1 || mp[pos.first][pos.second] < mp[pos.first+1][pos.second]))
+                {
+                    mp[pos.first+1][pos.second] = mp[pos.first][pos.second];
+                    pos.first++;
+                    yes = 1;
+                }
+                if(yes==0){ //Checking if the current position is different and legal
+                    break;
+                }
+            }
+            while(inpt[pos.first][pos.second] == 'L' || inpt[pos.first][pos.second] == 'R' || inpt[pos.first][pos.second] == 'U' || inpt[pos.first][pos.second] == 'D');//While it's in a conveyor loop
+
+            if(yes==0){ //If the position is on -2 or stuck on an infinite conveyor loop, the current position is killed
+                continue;
+            }
+        }
+
+        /*Use a move array to make this neater*/
+        if(mp[pos.first+1][pos.second] == -1 || mp[pos.first][pos.second]+1 < mp[pos.first+1][pos.second]) //Two conditions: Either checking if it's unknown or if there's a quicker solution
+        {
+            mp[pos.first+1][pos.second] = mp[pos.first][pos.second]+1;
+            q.push(make_pair(pos.first+1, pos.second));
+        }
+        if(mp[pos.first-1][pos.second] == -1 || mp[pos.first][pos.second]+1 < mp[pos.first-1][pos.second])
+        {
+            mp[pos.first-1][pos.second] = mp[pos.first][pos.second]+1;
+            q.push(make_pair(pos.first-1, pos.second));
+        }
+        if(mp[pos.first][pos.second+1] == -1 || mp[pos.first][pos.second]+1 < mp[pos.first][pos.second+1])
+        {
+            mp[pos.first][pos.second+1] = mp[pos.first][pos.second]+1;
+            q.push(make_pair(pos.first, pos.second+1));
+        }
+        if(mp[pos.first][pos.second-1] == -1 || mp[pos.first][pos.second]+1 < mp[pos.first][pos.second-1])
+        {
+            mp[pos.first][pos.second-1] = mp[pos.first][pos.second]+1;
+            q.push(make_pair(pos.first, pos.second-1));
+        }
+    }
+
+    for(i=0; i<n; i++)
+    {
+        for(j=0; j<m; j++)
+        {
+            if(inpt[i][j]=='.')
+            {
+                if(mp[i][j]>0)
+                {
+                    printf("%d\n", mp[i][j]);
+                }
+                else //Impossible to go
+                {
+                    printf("-1\n");
+                }
+
+            }
+        }
+    }
+
+    return 0;
+}
