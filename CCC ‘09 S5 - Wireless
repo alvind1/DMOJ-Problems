@@ -1,0 +1,65 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+#include <math.h>
+
+using namespace std;
+
+/***
+5 5 1
+3 3 2 1
+***/
+
+int main()
+{
+    int m, n, k;
+    int x, y, r, b;
+    int i, j;
+    int w;
+    int brt = 0;
+    int mx = 0;
+    int ct = 0;
+    scanf(" %d %d %d", &m, &n, &k);
+
+    int mp[m+1][n+1]; //2D difference array
+    memset(mp, 0, sizeof(mp));
+
+    for(i=0; i<k; i++){
+        scanf(" %d %d %d %d", &x, &y, &r, &b);
+        x--;
+        y--;
+        for(j=0; j<m; j++){ //Just making a difference array for each row. Calculate the starting and the ending point by finding the width of the circle on every row from the centre axis of the circle.
+            if(pow(r, 2)-pow(y-j, 2) >= 0){
+                w = sqrt(pow(r, 2)-pow(y-j, 2));
+                if(x-w < 0){
+                    mp[j][0] += b;
+                }else{
+                    mp[j][x-w] += b;
+                }
+                if(x+w+1 > n){
+                    mp[j][n] -= b;
+                }else{
+                    mp[j][x+w+1] -= b;
+                }
+            }
+        }
+    }
+
+    for(i=0; i<m; i++){
+        for(j=0; j<n; j++){
+            brt += mp[i][j];
+            if(mx == brt){
+                ct++;
+            }
+            if(brt > mx){
+                mx = brt;
+                ct = 1;
+            }
+        }
+        brt = 0;
+    }
+
+    printf("%d\n%d", mx, ct);
+
+    return 0;
+}
