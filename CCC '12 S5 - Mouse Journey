@@ -1,0 +1,54 @@
+#include <iostream>
+#include <stdio.h>
+#include <cstring>
+
+using namespace std;
+
+/***
+3 4
+3
+2 3
+2 1
+1 4
+
+3 3
+2
+2 3
+2 1
+***/
+
+int main()
+{
+    int r, c;
+    int k;
+    int i, j;
+    int a, b;
+
+    scanf(" %d %d", &r, &c);
+    int lb[r+1][c+1];
+    bool mp[r+1][c+1];
+
+    memset(lb, 0, sizeof(lb));
+    memset(mp, true, sizeof(mp));
+
+    scanf(" %d", &k);
+
+    for(i=0; i<k; i++){
+        scanf(" %d %d", &a, &b);
+        mp[a][b] = false;
+    }
+
+    lb[1][0] = 1;
+
+    for(i=1; i<=r; i++){
+        for(j=1; j<=c; j++){
+            if(mp[i][j] == true){
+                lb[i][j] = lb[i-1][j]+lb[i][j-1];
+            }
+        }
+    }
+
+    printf("%d", lb[r][c]);
+
+    return 0;
+}
