@@ -1,0 +1,47 @@
+#include <iostream>
+#include <queue>
+#include <stdio.h>
+#include <cstring>
+
+using namespace std;
+
+int main()
+{
+    int m;
+    int cl;
+    int i;
+    int num;
+    scanf(" %d %d", &m, &cl);
+    int hit[cl];
+    int n[m+1];
+    memset(n, 0, sizeof(n));
+    for(i=0; i<cl; i++) scanf(" %d", &hit[i]);
+
+    queue <int> q;
+    q.push(0);
+
+    while(!q.empty()){
+        num = q.front();
+        q.pop();
+
+        for(i=0; i<cl; i++){
+            if(num+hit[i] <= m){
+                if(n[num+hit[i]] == 0){
+                    n[num+hit[i]] = n[num]+1;
+                    q.push(num+hit[i]);
+                }else{
+                    n[num+hit[i]] = min(n[num]+1, n[num+hit[i]]);
+                }
+            }
+        }
+
+        if(n[m] != 0){
+            printf("Roberta wins in %d strokes.", n[m]);
+            return 0;
+        }
+    }
+
+    printf("Roberta acknowledges defeat.");
+
+    return 0;
+}
