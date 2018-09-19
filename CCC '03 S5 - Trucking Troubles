@@ -1,0 +1,65 @@
+#include <iostream>
+#include <stdio.h>
+#include <limits>
+#include <vector>
+#include <queue>
+#define s second
+#define f first
+
+using namespace std;
+
+
+int main()
+{
+    int c, r, d;
+    scanf(" %d %d %d", &c, &r, &d);
+    int i;
+    int ct[c];
+    bool dest[c];
+    vector <pair<int, int> > v[c]; //weight, index;
+    priority_queue<pair<int, int> > q; //weight, index
+    int a, b, e;
+    pair <int, int> cur; //weight, index
+    int mn = numeric_limits<int>::max();
+
+    for(i=0; i<c; i++){
+        ct[i] = 0;
+        dest[i] = false;
+    }
+
+    for(i=0; i<r; i++){
+        scanf(" %d %d %d", &a, &b, &e);
+        a--;
+        b--;
+        v[a].push_back(make_pair(e, b));
+        v[b].push_back(make_pair(e, a));
+    }
+
+    for(i=0; i<d; i++){
+        scanf(" %d", &a);
+        a--;
+        dest[a] = true;
+    }
+
+    ct[0] = 0;
+    q.push(make_pair(0, 0));
+
+    while(!q.empty()){
+        cur = q.top();
+        q.pop();
+
+        for(i=0; i<v[cur.s].size(); i++){
+            if(v[cur.s][i].f>ct[v[cur.s][i].s]){
+                ct[v[cur.s][i].s] = v[cur.s][i].f;
+                q.push(make_pair(ct[v[cur.s][i].s], v[cur.s][i].s));
+            }
+        }
+    }
+
+    for(i=0; i<c; i++){
+        if(dest[i]==true && ct[i]<mn) mn = ct[i];
+    }
+    printf("%d", mn);
+
+    return 0;
+}
