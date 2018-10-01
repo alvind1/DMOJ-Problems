@@ -1,0 +1,78 @@
+#include <iostream>
+#include <stdio.h>
+#include <queue>
+#include <vector>
+
+using namespace std;
+
+int main()
+{
+    int n, m;
+    int i;
+    int num;
+    scanf(" %d %d", &n, &m);
+    vector <int> v[n];
+    queue <int> q;
+    int chk[n];
+    int a, b;
+    for(i=0; i<n; i++){
+        chk[i] = false;
+    }
+
+    for(i=0; i<m; i++){
+        scanf(" %d %d", &a, &b);
+        a--;
+        b--;
+        v[a].push_back(b);
+    }
+
+    scanf(" %d %d", &a, &b);
+    a--;
+    b--;
+    chk[a] = true;
+
+    q.push(a);
+
+    while(!q.empty()){
+        num = q.front();
+        q.pop();
+
+        for(i=0; i<v[num].size(); i++){
+            if(chk[v[num][i]] == false){
+                chk[v[num][i]] = true;
+                q.push(v[num][i]);
+            }
+        }
+        if(chk[b]){
+            printf("yes");
+            return 0;
+        }
+    }
+
+    while(!q.empty()) q.pop();
+
+    q.push(b);
+    for(i=0; i<n; i++) chk[i] = false;
+    chk[b] = true;
+
+
+    while(!q.empty()){
+        num = q.front();
+        q.pop();
+
+        for(i=0; i<v[num].size(); i++){
+            if(chk[v[num][i]] == false){
+                chk[v[num][i]] = true;
+                q.push(v[num][i]);
+            }
+        }
+        if(chk[a]){
+            printf("no");
+            return 0;
+        }
+    }
+
+    printf("unknown");
+
+    return 0;
+}
