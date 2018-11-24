@@ -1,0 +1,62 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stdio.h>
+
+#define mp(a, b) make_pair(a, b)
+#define f first
+#define s second
+#define MXN 2147483646
+
+using namespace std;
+
+int main()
+{
+    int k, n, m;
+    int i, j;
+    int a, b, c, d;
+    int mn = MXN;
+    scanf(" %d %d %d", &k, &n, &m);
+
+    vector <pair<int, pair<int, int> > > v[n]; //time, hull, island
+    priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int> > >, greater<pair<int, pair<int, int> > > > q; //time, hull, island
+    int sp[n][k+1]; //island, hull
+    bool chk[n];
+    pair <int, pair<int, int> > p;
+
+    for(i=0; i<n; i++) for(j=0; j<k+1; j++) sp[i][j] = MXN;
+
+    for(i=0; i<m; i++){
+        scanf(" %d %d %d %d", &a, &b, &c, &d);
+        a--;
+        b--;
+        v[a].push_back(mp(c, mp(d, b)));
+        v[b].push_back(mp(c, mp(d, a)));
+    }
+
+    scanf(" %d %d", &a, &b);
+    a--;
+    b--;
+
+    q.push(mp(0, mp(0, a)));
+    sp[a][0] = 0;
+
+    while(!q.empty()){
+        p = q.top();
+        q.pop();
+
+        for(i=0; i<v[p.s.s].size(); i++){ 
+            if(p.s.f+v[p.s.s][i].s.f < k && v[p.s.s][i].f+sp[p.s.s][p.s.f] < sp[v[p.s.s][i].s.s][p.s.f+v[p.s.s][i].s.f]){
+                sp[v[p.s.s][i].s.s][p.s.f+v[p.s.s][i].s.f] = v[p.s.s][i].f+sp[p.s.s][p.s.f];
+                q.push(mp(sp[v[p.s.s][i].s.f][p.s.f+v[p.s.s][i].s.s], mp(p.s.f+v[p.s.s][i].s.f, v[p.s.s][i].s.s)));
+            }
+        }
+    }
+
+    for(i=0; i<=k; i++) mn = min(mn, sp[b][i]);
+
+    if(mn == MXN) printf("-1");
+    else printf("%d", mn);
+
+    return 0;
+}
